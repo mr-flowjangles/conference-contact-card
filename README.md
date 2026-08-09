@@ -1,73 +1,48 @@
 # Conference Contact Card
 
-A mobile contact card + QR code. Scan it, land on a page with your photo and
-title, tap **Save Contact**, and it drops straight into the phone's Contacts
-app — no app, account, or sign-up needed.
+Repo: https://github.com/mr-flowjangles/conference-contact-card
 
 ## Want your own card?
 
-Send these to whoever's running this repo for you:
+1. Send to the repo owner: name, job title, work email, phone (optional),
+   LinkedIn link, headshot photo, one-line "about me."
+2. Wait for your link + QR code back.
 
-- Your name, job title, work email
-- LinkedIn link
-- Phone number (optional)
-- A headshot photo
-- One or two sentences about what you do
+Done. No GitHub needed.
 
-You'll get back a link and a QR code. That's the whole process — you don't
-need GitHub, Git, or anything technical.
+## Maintainer: add a new person
 
----
+1. Copy `data/rob-rose.json` to `data/<name>.json`.
+2. Fill in their details in that file.
+3. Add their photo to `assets/`.
+4. Set `pageUrl` to `https://mr-flowjangles.github.io/conference-contact-card/<name>/index.html`.
+5. Push to `master`.
+6. Check the **Actions** tab until it's green.
+7. Send them their link and their QR image:
+   - Link: `https://mr-flowjangles.github.io/conference-contact-card/<name>/index.html`
+   - QR: `https://mr-flowjangles.github.io/conference-contact-card/<name>/qr/qr.png`
 
-## For whoever's maintaining the repo
+## Maintainer: build locally
 
-Adding someone:
+1. Install Node.js.
+2. Install Python 3 + Pillow: `pip install Pillow`.
+3. Install rsvg-convert: `brew install librsvg`.
+4. Run `node build.js data/<name>.json`.
+5. Open `dist/<name>/index.html` to preview.
 
-1. Copy `data/rob-rose.json` to `data/<their-name>.json` (lowercase, dash
-   instead of space — e.g. `data/jane-doe.json`) and fill in their details.
-2. Add their photo to `assets/`.
-3. Set `pageUrl` in their file to
-   `https://mr-flowjangles.github.io/conference-contact-card/<their-name>/index.html`.
-4. Push to `master`. GitHub Actions builds and deploys it automatically —
-   check the **Actions** tab, usually done in under a minute.
-5. Send them their link:
-   `https://mr-flowjangles.github.io/conference-contact-card/<their-name>/index.html`
-   and their QR image:
-   `https://mr-flowjangles.github.io/conference-contact-card/<their-name>/qr/qr.png`
+## Maintainer: get someone's QR onto a phone as a home-screen tile
 
-### Getting a QR onto your own phone as a home-screen tile
+1. Open `https://mr-flowjangles.github.io/conference-contact-card/<name>/qr/index.html` in Safari on the phone.
+2. Tap Share.
+3. Tap Add to Home Screen.
+4. Tap the new icon — QR shows fullscreen.
 
-Open `.../<their-name>/qr/index.html` on the phone in Safari, Share → **Add
-to Home Screen**. Tapping the icon shows the QR fullscreen, no browser bar —
-that's what you hold up for people to scan.
+## Files
 
-### Building locally
-
-Requires Node.js, Python 3 with Pillow (`pip install Pillow`), and
-`rsvg-convert` (`brew install librsvg`).
-
-```bash
-node build.js data/<their-name>.json
-```
-
-Outputs to `dist/<their-name>/` — the card, the vCard, and the `qr/` folder
-(QR as `.svg`, `.png`, and a fullscreen tile page). Open
-`dist/<their-name>/index.html` in a browser to preview before pushing.
-
-### How it's put together
-
-```
-data/<name>.json      — one person's info
-assets/                — shared logo + individual headshots
-template/card.html     — the shared page template
-template/qr-tile.html  — the fullscreen home-screen QR page template
-lib/qr-brand.js        — generates the branded, scan-verified QR
-build.js               — renders template + data → dist/<name>/
-.github/workflows/     — auto-builds + deploys every data/*.json on push
-```
-
-### Hosting somewhere other than GitHub Pages
-
-Everything in `dist/<name>/` is static — upload it anywhere. Just set
-`pageUrl` to the real destination URL *before* building, since it's baked
-into the QR code.
+- `data/<name>.json` — one person's info
+- `assets/` — logo + headshots
+- `template/card.html` — the card page template
+- `template/qr-tile.html` — the fullscreen QR tile template
+- `lib/qr-brand.js` — QR generator
+- `build.js` — builds `dist/<name>/` from template + data
+- `.github/workflows/` — auto-builds + deploys on push
