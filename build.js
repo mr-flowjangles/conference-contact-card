@@ -114,6 +114,13 @@ const qrLogoAspect = hasLogo ? 4831 / 2045 : 1;
 const qrSvg = generateBrandedQrSvg(data.pageUrl || '', qrLogoPath, { logoAspect: qrLogoAspect });
 fs.writeFileSync(path.join(qrOutDir, 'qr.svg'), qrSvg);
 
+// Printable PNG too — badges/lock screens need a raster file, not everything opens an SVG
+try {
+  execFileSync('rsvg-convert', ['-w', '1200', '-h', '1200', path.join(qrOutDir, 'qr.svg'), '-o', path.join(qrOutDir, 'qr.png')]);
+} catch {
+  console.warn('rsvg-convert not found — skipping qr.png (qr.svg still generated).');
+}
+
 const tileTpl = fs.readFileSync(path.join(root, 'template', 'qr-tile.html'), 'utf8');
 fs.writeFileSync(path.join(qrOutDir, 'index.html'), render(tileTpl, ctx));
 
