@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const { execFileSync } = require('child_process');
 
 const root = path.join(__dirname, '..');
 
@@ -144,14 +145,20 @@ async function main() {
       path.join(root, 'data', `${slug}.json`),
       JSON.stringify(data, null, 2) + '\n'
     );
-    results.push({ ok: true, slug });
+
+    try {
+      execFileSync('node', [path.join(root, 'build.js'), path.join(root, 'data', `${slug}.json`)], { stdio: 'pipe' });
+      results.push({ ok: true, slug });
+    } catch (err) {
+      results.push({ ok: false, row: rec, error: `build failed: ${err.message}` });
+    }
   }
 
   console.log('\nDone:');
   for (const r of results) {
-    console.log(r.ok ? `  ✓ ${r.slug} → data/${r.slug}.json` : `  ✗ ${r.row.fullName || '(unknown)'}: ${r.error}`);
+    console.log(r.ok ? `  ✓ ${r.slug} → dist/${r.slug}/` : `  ✗ ${r.row.fullName || '(unknown)'}: ${r.error}`);
   }
-  console.log(`\nNext: node build.js data/<slug>.json for each new person, then deploy dist/<slug>/.`);
+  console.log(`\nDeploy the dist/<slug>/ folders to wherever each pageUrl points.`);
 }
 
 main();
