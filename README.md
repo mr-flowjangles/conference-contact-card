@@ -2,47 +2,59 @@
 
 Repo: https://github.com/mr-flowjangles/conference-contact-card
 
-## Want your own card?
+A mobile contact card + QR code. Scan it, land on a page with photo and
+title, tap **Save Contact**, it drops into the phone's Contacts app.
+Everyone's card is hosted on their own site (`robrose.info/card` for Rob) —
+nothing shared, nothing public-facing collects data.
 
-1. Send to the repo owner: name, job title, work email, phone (optional),
-   LinkedIn link, headshot photo, one-line "about me."
-2. Wait for your link + QR code back.
+## Get people added (internal spreadsheet import)
 
-Done. No GitHub needed.
+1. Share an internal spreadsheet (Google Sheets, Excel, whatever) with these
+   columns: `fullName, jobTitle, workEmail, phone, linkedinUrl, aboutMe, photoUrl`.
+   `phone` and `photoUrl` can be blank. `photoUrl` is a link to their headshot.
+2. Have people fill in a row each.
+3. Export the sheet as CSV.
+4. Run:
+   ```bash
+   node scripts/import-csv.js people.csv --base-url https://robrose.info/card
+   ```
+   This creates a `data/<slug>.json` per row and downloads each photo into
+   `assets/`.
+5. For each new person:
+   ```bash
+   node build.js data/<slug>.json
+   ```
+6. Deploy `dist/<slug>/` to wherever `pageUrl` says it lives (see below).
 
-## Maintainer: add a new person
-
-1. Copy `data/rob-rose.json` to `data/<name>.json`.
-2. Fill in their details in that file.
-3. Add their photo to `assets/`.
-4. Set `pageUrl` to `https://mr-flowjangles.github.io/conference-contact-card/<name>/index.html`.
-5. Push to `master`.
-6. Check the **Actions** tab until it's green.
-7. Send them their link and their QR image:
-   - Link: `https://mr-flowjangles.github.io/conference-contact-card/<name>/index.html`
-   - QR: `https://mr-flowjangles.github.io/conference-contact-card/<name>/qr/qr.png`
-
-## If you're technical and want to do it yourself
-
-1. Fork this repo.
-2. Enable Pages on your fork — Settings → Pages → Source: **GitHub Actions**.
-3. Copy `data/rob-rose.json` to `data/<your-name>.json` and fill it in.
-4. Add your photo to `assets/`.
-5. Set `pageUrl` to `https://<your-github-username>.github.io/<repo-name>/<your-name>/index.html`.
-6. Push to `master`.
-7. Check the **Actions** tab until it's green.
+Nothing here is public or open to the internet — it only runs when you run it.
 
 ## Build locally
 
-1. Install Node.js.
-2. Install Python 3 + Pillow: `pip install Pillow`.
-3. Install rsvg-convert: `brew install librsvg`.
-4. Run `node build.js data/<name>.json`.
-5. Open `dist/<name>/index.html` to preview.
+Requires Node.js, Python 3 + Pillow (`pip install Pillow`), and
+`rsvg-convert` (`brew install librsvg`).
+
+```bash
+node build.js data/<name>.json
+```
+
+Outputs to `dist/<name>/`: the card page, the vCard, and a `qr/` folder
+(QR as `.svg`, `.png`, and a fullscreen home-screen tile page).
+
+## Deploying
+
+Everything in `dist/<name>/` is static — upload it to S3, Netlify, your own
+host, wherever. `pageUrl` in the data file must match the real destination
+*before* you build, since it's baked into the QR code and the tile's manifest.
+
+Rob's deploy (S3 + CloudFront):
+```bash
+aws s3 sync dist/<name>/ s3://<bucket>/card/
+aws cloudfront create-invalidation --distribution-id <id> --paths "/card/*"
+```
 
 ## Get a QR onto a phone as a home-screen tile
 
-1. Open `.../<name>/qr/index.html` in Safari on the phone.
+1. Open `<pageUrl-folder>/qr/index.html` in Safari on the phone.
 2. Tap Share.
 3. Tap Add to Home Screen.
 4. Tap the new icon — QR shows fullscreen.
@@ -53,6 +65,6 @@ Done. No GitHub needed.
 - `assets/` — logo + headshots
 - `template/card.html` — the card page template
 - `template/qr-tile.html` — the fullscreen QR tile template
-- `lib/qr-brand.js` — QR generator
+- `lib/qr-brand.js` — QR generator (rounded dots, logo in center, circular frame)
 - `build.js` — builds `dist/<name>/` from template + data
-- `.github/workflows/` — auto-builds + deploys on push
+- `scripts/import-csv.js` — turns a spreadsheet export into `data/*.json`
