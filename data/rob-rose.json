@@ -9,7 +9,14 @@
   "workEmail": "rob.rose@tspi.net",
   "phone": "515-867-6258",
   "linkedinUrl": "https://www.linkedin.com/in/robmrose",
+  "bookingUrl": "https://outlook.office.com/bookwithme/user/0100decbc04f49c7b7fb75eb21027f1f@tspi.net/meetingtype/AC4DUplM5k-KKDeKlSIp7Q2?anonymous&ismsaljsauthenabled&ep=mLinkFromTile",
   "aboutMe": "Solutions Architect at TSPi building AI-powered tools and cloud solutions — from RAG chatbots to enterprise architecture.",
+  "credentials": [
+    "CMS Modernization",
+    "AWS Cloud Architecture",
+    "AI Implementations",
+    "20+ Years Engineering"
+  ],
   "photo": "rob-rose.jpg",
   "pageUrl": "https://robrose.info/card/index.html"
 }

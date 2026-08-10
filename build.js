@@ -68,12 +68,17 @@ const hasLogo = !!logoName;
 const logoPath = hasLogo ? path.join(root, 'assets', logoName) : null;
 const hasPhoto = !!(data.photo && fs.existsSync(photoPath));
 
+const credentialsHtml = Array.isArray(data.credentials) && data.credentials.length
+  ? data.credentials.map(c => `<span class="credential">${c}</span>`).join('')
+  : '';
+
 const ctx = {
   ...data,
   vcfFile,
   hasLogo,
   logoFile: logoName,
   hasPhoto,
+  credentialsHtml,
 };
 
 // minimal mustache-like renderer: {{#key}}...{{/key}}, {{^key}}...{{/key}}, {{key}}

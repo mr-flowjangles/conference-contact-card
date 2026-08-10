@@ -115,6 +115,10 @@ async function main() {
     const slug = slugify(rec.fullName);
     const { firstName, lastName } = splitName(rec.fullName);
 
+    const credentials = [rec.credential1, rec.credential2, rec.credential3, rec.credential4]
+      .map(c => (c || '').trim())
+      .filter(Boolean);
+
     let photoFile = null;
     if (rec.photoUrl) {
       photoFile = `${slug}.jpg`;
@@ -136,7 +140,9 @@ async function main() {
       workEmail: rec.workEmail || '',
       ...(rec.phone ? { phone: rec.phone } : {}),
       linkedinUrl: rec.linkedinUrl || '',
+      ...(rec.bookingUrl ? { bookingUrl: rec.bookingUrl } : {}),
       aboutMe: rec.aboutMe || '',
+      ...(credentials.length ? { credentials } : {}),
       ...(photoFile ? { photo: photoFile } : {}),
       pageUrl: `${baseUrl.replace(/\/$/, '')}/${slug}/index.html`,
     };
