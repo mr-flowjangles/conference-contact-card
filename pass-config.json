@@ -1,0 +1,9 @@
+{
+  "passTypeIdentifier": "pass.info.robrose.card",
+  "teamIdentifier": "REPLACE_WITH_TEAM_ID",
+  "organizationName": "TSPi",
+  "barcodeStyle": "branded",
+  "backgroundColor": "rgb(255,255,255)",
+  "foregroundColor": "rgb(22,24,29)",
+  "labelColor": "rgb(185,28,44)"
+}

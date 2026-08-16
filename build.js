@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { generateBrandedQrSvg } = require('./lib/qr-brand');
+const { buildTileIcons } = require('./lib/pass-images');
 
 const dataPath = process.argv[2];
 if (!dataPath) {
@@ -59,6 +60,18 @@ const vcfWithPhoto = photoBlock
 const vcfFile = `${data.slug}.vcf`;
 fs.writeFileSync(path.join(outDir, vcfFile), vcfWithPhoto);
 
+// ---- Apple Wallet pass ----
+// Built before the HTML so the card page knows whether to show the Add to
+// Wallet button. Unsigned passes aren't installable, so no cert means no button.
+let passFile = null;
+try {
+  const { buildPass } = require('./scripts/build-pass');
+  const result = buildPass(dataPath, { quiet: false });
+  if (result && result.pkpass) passFile = path.basename(result.pkpass);
+} catch (err) {
+  console.warn(`Wallet pass skipped: ${err.message}`);
+}
+
 // ---- HTML ----
 let tpl = fs.readFileSync(path.join(root, 'template', 'card.html'), 'utf8');
 
@@ -79,6 +92,8 @@ const ctx = {
   logoFile: logoName,
   hasPhoto,
   credentialsHtml,
+  hasPass: !!passFile,
+  passFile,
 };
 
 // minimal mustache-like renderer: {{#key}}...{{/key}}, {{^key}}...{{/key}}, {{key}}
@@ -149,7 +164,7 @@ const manifest = {
 fs.writeFileSync(path.join(qrOutDir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
 
 if (fs.existsSync(markPath)) {
-  execFileSync('python3', [path.join(root, 'generate-icons.py'), markPath, qrOutDir]);
+  buildTileIcons(markPath, qrOutDir);
 } else {
   console.warn('No assets/tspi-mark.png found — skipping home-screen icon generation.');
 }

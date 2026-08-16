@@ -140,6 +140,10 @@
     color: var(--accent);
     border-color: var(--accent);
   }
+  .btn-wallet {
+    background: #000;
+    color: #fff;
+  }
   .row-actions {
     display: flex;
     gap: 10px;
@@ -180,6 +184,7 @@
 
     <div class="actions">
       <a class="btn btn-primary" href="{{vcfFile}}" download>Save Contact</a>
+      {{#hasPass}}<a class="btn btn-wallet" href="{{passFile}}">Add to Apple Wallet</a>{{/hasPass}}
       {{#bookingUrl}}<a class="btn btn-outline" href="{{bookingUrl}}" target="_blank" rel="noopener">Schedule Time With Me</a>{{/bookingUrl}}
       <div class="row-actions">
         <a class="btn btn-secondary" href="{{linkedinUrl}}" target="_blank" rel="noopener">LinkedIn</a>
